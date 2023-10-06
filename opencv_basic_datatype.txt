@@ -1,0 +1,196 @@
+OpenCV 기본 자료형 클래스
+Point_ 클래스 : 픽셀의 좌표 표현 
+Size_ 클래스 : 사각형 영역의 크기 표현
+Rect_ 클래스 : 사각형의 위치와 크기 정보 표현
+RotateRect 클래스 : 회전된 사격형 표현
+Range 클래스 : 범위 표현
+String 클래스 : 문자열 표현
+
+=================<<Point 클래스>>
+template<typename _Tp> class Point_
+{
+public:
+	Point_(); // x=0, y=0으로 초기화
+	Point_(_Tp _x, _Tp _y);//(_x,_y)좌표를 인자로 받는 생성자, x=_x, y=_y로 초기화
+	Point_(const Point_& pt);//복사 생성자. x=pt.x, y=pt.y로 초기화
+
+	Point_& operator = (const Point_& pt); //대입 연산자 재정의
+									 //Point::멤버함수
+	_Tp dot(const Point_& pt) const; // 두 점 사이의 내적(dot product)을 계산하여 반환
+	double ddot(const Point_& pt) const; //두 점 사이의 내적값을 double형으로 반환
+	double cross(const Point_& pt) const; //두 점 사이의 외적(cross product)값을 반환
+
+	bool inside(const Rect_<_Tp>& r) const;//점의 좌표가 사각형 r영역 안에 있으면 true 반환
+	_Tp x, y; //멤버변수. x축좌표, y축좌표 나타냄
+};
+//다양한 자료형에 대해 Point_ 클래스 이름 재정의
+typedef Point_<int>	Point2i;
+//typedef Point_<int64>	Point2l;
+typedef Point_<float> Point2f;
+typedef Point_<double> Point2d;
+typedef Point2i		Point;
+
+/*
+Point pt1; // 생성시에는 (0,0)을 나타냄
+pt1.x = 5; pt1.y = 10;
+Point pt2(10, 30);
+
+사칙연산
+pt1 = [5, 10]; pt2 = [10, 30]
+Point pt3 = pt1 + pt2; //[15,40]
+Point pt4 = pt1 * 2; //[10,20]
+int d1 = pt1.dot(pt2); //350 : x좌표끼리의 합 + y좌표끼리의 합
+bool b1 = (pt1 == pt2); //false
+//점의 좌표 출력
+cout << "pt1:" << pt1 << endl; 
+cout << "pt2:" << pt2 << endl;
+*/
+=================<<Size 클래스>>
+template<typename _Tp> class Size_
+{
+public:
+	Size_(); //기본생성자. witdh=0, height=0으로 초기화
+	Size_(_Tp _width, _Tp _height); //width = _width, height = _height로 초기화
+	Size_(const Size_& sz);//복사 생성자. width=sz.width, height=sz.height로 초기화
+
+	Size_& operator = (const Size_& sz);//대입 연산자 재정의
+	_Tp area() const;// Size::area() 멤버 함수는 사각형 크기에 해당하는 면적(width*height)를 반환
+	bool empty() const;// Size::empty() 멤버 함수는 유효하지 않은 크기면 true를 반환
+
+	_Tp width, height; // 멤버변수. width는 사각형 영역의 가로크기, height는 사각형 영역의 세로크기를 나타냄.
+};
+//다양한 자료형에 대한 Size_클래스 이름 재정의
+typedef Size_<int>	Size2i;
+typedef Size_<int64>	Size2l;
+typedef Size_<float>	Size2f;
+typedef Size_<double>	Size2d;
+typedef Size2i	Size;
+
+/*
+Size sz1, sz2(10, 20); // [0x0],[10x20] 생성
+sz1.width = 5; sz1.height = 10; // s1z = [5x10]
+
+사칙연산
+//sz1 = [5x10], sz2 = [15x30]
+Size sz3 = sz1 + sz2; // [15x30]
+Size sz4 = sz1 * 2; // [10x20]
+int area1 = sz4.area(); // area1 = 200
+*/
+=================<<Rect 클래스>>
+template<typename _Tp> class Rect_
+{
+public:
+    Rect_();                                                  // 기본 생성자. 모든 멤버 변수를 0으로 초기화
+    Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);           // (_x, _y, _width, _height) 사각형 정보를 인자로 받는 생성자로 x=_x, y=_y, width=_width, height=_height 로 초기화
+    Rect_(const Recdt_& r);                                   // 복사 생성자. x = r.x, y = r.y, width = r.width, height = r.height로 초기화
+    Rect_(cosnt Point_<_Tp>& org, const Size_<_Tp>& sz);      // 좌측 상단 점의 좌표와 사각형의 크기 정보를 인자로 받는 생성자
+    Rect_(const Point_<_Tp>& pt1, const Point_<_Tp>& pt2);    // 사각형에서 서로 대각 위치에 있는 두 점의 좌표를 인자로 받는 생성자
+
+    Rect_& operator = (const Rect_& r); // 대입 연산자 재정의
+                             // Rect::() 멤버 함수
+    Point_<_Tp> t1() const;  // 사각형의 좌측 상단 점의 좌표 반환
+    Point_<_Tp> br() const;  // 사각형의 우측 하단 점의 좌표 반환
+    Size_<_Tp> size() const; // 사각형의 크기 정보 반환
+    _Tp area() const;  // 사각형의 면적(width x height) 반환
+    bool empty() const;// 유효하지 않은 사각형이면 true 반환
+    bool contains(const Point_<_Tp>& pt) const; // 인자로 전달된 pt 점이 사각형 내부에 있으면 true 반환
+
+    _Tp x, y, width, height); // 멤버 변수로 x, y 는 사각형 좌측 상단 점의 좌표, width, height는 사각형의 가로와 세로 크기를 나타냄
+};
+
+//다양한 자료형에 대한 Rect_클래스 이름 재정의
+typedef Rect_<int>     Rect2i;            
+typedef Rect_<float>   Rect2f;                   
+typedef Rect_<double>  Rect2d;
+typedef Rect2i         Rect;
+
+
+/*
+사칙연산
+Rect rc1;  //[0x0 from(0,0)]
+Rect rc2(10, 10, 60, 40); //[60x40 from(10,10)]
+Rect rc3 = rc1 + Size(50, 40); // [50x40 from(0,0)]
+Rect rc4 = rc2 + Point(10, 10); //[60x40 from(20,20)]
+
+논리연산
+Rect rc5 = rc3 & rc4;//[30x20 from (20, 20)] :겹치는 영역 반환
+Rect rc6 = rc3 | rc4;//[80x60 from (0, 0)] : 합집합을 포함시키는 최소의 사각형 영역 반환
+*/
+ 
+=================<<RotatedRect 클래스>>
+#include "Rect_.h"
+#include "Point_.h"
+#include "Size_.h"
+//템플릿 클래스가 아님. 모든 정보를 float 자료형을 사용하여 표현
+class RotatedRect
+{
+public:
+	RotatedRect();//기본 생성자. 모든 멤버 변수를 0으로 초기화
+	RotatedRect(const Point2f& _center, const Size2f& _size, float _angle); // center = _center, size=_size, angle = _angle로 초기화
+	RotatedRect(const Point2f& point1, const Point2f& point2, const Point2f& point3);//인자로 전달된 세 점은 회전된 사각형의 세 꼭지점 좌표를 나타냄
+
+	void points(Point2f pts[]) const; //회전된 사각형은 네 꼭지점 좌표를 pts인자에 저장
+	Rect boundingRect() const;//회전된 사각형을 포함하는 최소 크기의 사각형 정보를 반환(정수 단위)
+	Rect_<float> boundingRect2f() const; // 회전된 사각형을 포함하는 최소 크기의 사각형 정보를 반환(실수 단위)
+
+	//멤버변수. 각각 사각형의 중심좌표, 사각형의 크기, 시계방향 회전 각도
+	Point2f center;
+	Size2f size;
+	float angle;
+
+};
+
+RotatedRect rr1(Point2f(40, 30), Size2f(40, 20), 30.f);
+
+//회전된 사각형의 네 꼭지점 좌표가 pts배열에 저장됨
+Point2f pts[4];
+rr1.points(pts);
+
+//바운딩 박스 : 회전된 사각형을 감싸는 최소 크기의 사각형
+Rect br = rr1.boundingRect(); // 사각형의 중심점과 크기 정보가 반환됨
+
+
+
+=================<<Range 클래스>>
+class Range
+{
+public:
+	Range();// 기본 생성자 start=end=0으로 초기화
+	Range(int _start, int _end);//두개의 정수를 인자로 받는 생성자. start = _start, end = _end로 초기화
+
+	int size() const;//범위 크기(end-start)를 반환
+	bool empty() const;//start와 end가 같으면 true반환
+	static Range all(); //start = INT_MIN, end = INT_MAX로 설정한 Range 객체를 반환
+
+	int start, end; //start : 범위의 시작, end : 범위의 끝
+};
+
+
+
+=================<<String 클래스>>
+class String
+{
+};
+/*
+OpenCV 4 버전 이후부터 std::string 클래스와 String 클래스는 완전히 같은 클래스로 통합.
+String str1 = "Hello";
+String str2 = "world";
+
+String str3 = str1 + " " + str2; //"Hello world"
+
+두 문자열 비교
+bool ret = (str2 == "WORLD"); // == 연산자는 대소문자를 구별함. => ret에는 false가 저장됨
+
+특정한 형식의 문자열 생성
+String format(const char* fmt, ...);
+fmt : 형식 문자열
+... : 가변 인자
+반환값 : 지정한 형식으로 생성된 문자열
+
+파일 이름에 해당하는 문자열 생성
+Mat imgs[3];
+for (int i = 0; i < 3 ; i++){
+	String filename = format("test%02d.bmp", i+1);
+	imgs[i] = imread(filename);
+}
+*/
